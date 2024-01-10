@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -18,27 +17,41 @@ return new class extends Migration
     LANGUAGE c IMMUTABLE PARALLEL SAFE STRICT AS
     '\$libdir/unaccent', 'unaccent_dict';
     QUERY);
-            \DB::unprepared(<<<QUERY
+        \DB::unprepared(<<<QUERY
     CREATE OR REPLACE FUNCTION public.f_unaccent(text)
     RETURNS text
     LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT
     RETURN public.immutable_unaccent(regdictionary 'public.unaccent', $1);
     QUERY);
 
+        Schema::create('files', function (Blueprint $table) {
+            $table->id();
+            $table->text('name');
+            $table->text('file_name');
+            $table->text('mime_type');
+            $table->text('path');
+            $table->text('file_hash');
+            $table->text('disk');
+            $table->text('extension');
+            $table->text('size');
+            $table->timestamps();
+        });
+
         Schema::create('pets', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name');
             $table->string('$normalized_name')->storedAs('upper(f_unaccent(name))');
             $table->string('specie');
             $table->string('gender');
             $table->string('size');
             $table->string('age');
-            $table->string('veterinary_care');
+            $table->text('veterinary_care');
             $table->string('temperament');
-            $table->string('suitable_living');
-            $table->string('sociable_with');
+            $table->text('suitable_living');
+            $table->text('sociable_with');
             $table->string('description');
+            $table->foreignIdFor(\App\Models\File::class, 'cover_id')->nullable()->constrained('files')->onDelete('SET NULL');
+            $table->timestamps();
         });
     }
 
@@ -48,5 +61,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('pets');
+        Schema::dropIfExists('files');
+
+        DB::unprepared('DROP FUNCTION IF EXISTS public.f_unaccent(text) CASCADE;');
+        \DB::unprepared('DROP FUNCTION IF EXISTS public.f_unaccent(text);');
+        \DB::unprepared('DROP FUNCTION IF EXISTS public.immutable_unaccent(regdictionary, text);');
+        \DB::unprepared('DROP EXTENSION IF EXISTS "unaccent";');
     }
 };
