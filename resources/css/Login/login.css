@@ -1,0 +1,99 @@
+:root {
+    --primary: #aef4ff;
+    --secundary: rgb(172, 227, 238);
+    --shadow: rgba(24, 94, 112, 0.5);
+    --button: #93a0b1;
+}
+
+body {
+    display: flex;
+    font-family: "Indie Flower", cursive;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 120vh;
+    margin: 0;
+    background-image: url("../../../public/images/cat.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+.loginContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    width: 300px;
+    border-radius: 15px;
+    background-color: var(--secundary);
+    box-shadow: 0px 4px 12px var(--shadow);
+    margin: 30px 0px 30px 0px;
+}
+
+.loginContainer button {
+    border-radius: 15px;
+    padding: 10px 25px;
+    display: inline-block;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 0 var(--button);
+    border: none;
+    -webkit-transition: ease-out 1.4s;
+    -moz-transition: ease-out 1.4s;
+    transition: ease-out 1.4s;
+}
+
+.loginContainer button:hover {
+    box-shadow: inset 400px 0 0 0 var(--button);
+}
+
+.register {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register button {
+    border: none;
+    text-decoration: underline;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.inputGroup {
+    position: relative;
+    margin-bottom: 35px;
+}
+
+.inputForm {
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 300px;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid black;
+}
+
+.inputForm:focus {
+    outline: none;
+}
+
+.inputLabel {
+    font-size: 18px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: 10px;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+}
+
+.inputForm:focus ~ .inputLabel,
+.inputForm:valid ~ .inputLabel {
+    top: -20px;
+    font-size: 14px;
+}
