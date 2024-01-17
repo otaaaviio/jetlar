@@ -18,9 +18,12 @@ const Login = () => {
                 email,
                 password,
             });
-    
+
             if (response.data.authorization.token) {
-                localStorage.setItem("token", response.data.authorization.token);
+                localStorage.setItem(
+                    "token",
+                    response.data.authorization.token
+                );
                 navigate("/home");
             } else {
                 alert("Credenciais inválidas");
@@ -30,68 +33,65 @@ const Login = () => {
             alert("Erro durante a autenticação");
         }
     };
-    
 
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-            }}
-        >
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                }}
-            >
-                <ReactSVG src={pet} />
-                <h1>JetLar</h1>
-            </div>
-            {!register && (
-                <div>
-                    <div className="loginContainer">
-                        <div className="inputGroup">
-                            <input
-                                type="text"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="inputForm"
-                                required
-                            />
-                            <label className="inputLabel">Email</label>
-                        </div>
-                        <div className="inputGroup">
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="inputForm"
-                                required
-                            />
-                            <label className="inputLabel">Senha</label>
-                        </div>
-                        <button onClick={handleLogin}>ENTRAR</button>
-                    </div>
-                    <div className="register">
-                        <button
-                            onClick={() => {
-                                setRegister(!register);
-                            }}
-                        >
-                            Ainda não é membro? Junte-se a nós
-                        </button>
-                    </div>
+        <body className="login">
+            <div className="containerLogin">
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <ReactSVG src={pet} />
+                    <h1>JetLar</h1>
                 </div>
-            )}
-            {register && (
-                <RegisterContainer
-                    setRegister={setRegister}
-                    register={register}
-                />
-            )}
-        </div>
+                {!register && (
+                    <div>
+                        <div className="loginContainer">
+                            <div className="inputGroup">
+                                <input
+                                    type="text"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="inputForm"
+                                    required
+                                />
+                                <label className="inputLabel">Email</label>
+                            </div>
+                            <div className="inputGroup">
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    className="inputForm"
+                                    required
+                                />
+                                <label className="inputLabel">Senha</label>
+                            </div>
+                            <button onClick={handleLogin}>ENTRAR</button>
+                        </div>
+                        <div className="register">
+                            <button
+                                onClick={() => {
+                                    setRegister(!register);
+                                }}
+                            >
+                                Ainda não é membro? Junte-se a nós
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {register && (
+                    <RegisterContainer
+                        setRegister={setRegister}
+                        register={register}
+                    />
+                )}
+            </div>
+        </body>
     );
 };
 
