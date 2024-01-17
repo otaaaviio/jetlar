@@ -1,0 +1,123 @@
+body.petPage {
+    background-image: url("../../../public/images/background.png");
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.centerPet {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.petContainer {
+    background-color: var(--secundary);
+    box-shadow: 0 8px 14px var(--shadow);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.petContainer div {
+    display: flex;
+}
+
+.imagePetEx {
+    width: 300px;
+    height: 300px;
+    background-color: gray;
+}
+
+.nameContainer {
+    display: flex;
+    height: 300px;
+    flex-direction: column;
+    margin-left: 25px;
+}
+
+.nameContainer h1 {
+    margin: 0;
+    margin-bottom: 25px;
+}
+
+.infoPetContainer {
+    flex-direction: column;
+    margin-top: 25px;
+    background-color: var(--primary);
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+.oneInfo {
+    border-bottom: 1px solid black;
+    padding: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.description {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary);
+    border-radius: 15px;
+    border: 1px solid black;
+    padding: 10px 5px 10px 5px;
+    width: 400px;
+}
+
+.deleteBtn,
+.editBtn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 0;
+    box-shadow: 0 2px 8px var(--shadow);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.deleteBtn:hover,
+.editBtn:hover {
+    transform: translateY(-5px);
+}
+
+.deleteBtn {
+    background-color: rgb(255, 42, 42);
+}
+
+.editBtn {
+    background-color: var(--secundary);
+}
+
+.btnContainer {
+    display: flex;
+    margin-block: 20px;
+    width: 750px;
+    justify-content: space-between;
+}
+
+.multipleInfos, .lastInfo {
+    display: flex;
+    padding-inline: 10px;
+    flex-direction: column;
+    border-bottom: 1px solid black;
+    justify-content: space-between;
+    margin-block: 10px;
+}
+
+.multipleInfos div,
+.lastInfo div {
+    display: flex;
+    margin-bottom: 4px;
+    flex-direction: column;
+}
+.multipleInfos a,
+.lastInfo a {
+    margin-left: 10px;
+}
+
+.lastInfo {
+    border: 0 !important;
+}

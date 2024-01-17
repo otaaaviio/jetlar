@@ -1,0 +1,45 @@
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    height: 400px;
+    width: 300px;
+    margin: 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cardContainer:hover {
+    transform: translateY(-5px);
+}
+
+.cardContainer h2 {
+    display: flex;
+    margin: 0;
+}
+
+.infoContainer {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(172, 227, 238);
+    padding-inline: 10px;
+    border-radius: 0 0 15px 15px;
+}
+
+.infoContainer h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.infoContainer div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.imageContainer {
+    border-radius: 15px 15px 0 0;
+}

@@ -1,10 +1,3 @@
-:root {
-    --primary: #aef4ff;
-    --secundary: rgb(172, 227, 238);
-    --shadow: rgba(24, 94, 112, 0.5);
-    --button: #93a0b1;
-}
-
 body.login {
     display: flex;
     font-family: "Indie Flower", cursive;
