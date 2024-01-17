@@ -34,7 +34,7 @@ class PetFactory extends Factory
             'size' => $size,
             'age' => $age,
             'temperament' => $temperament,
-            'description' => $this->faker->text(50),
+            'description' => $this->faker->text(255),
         ];
     }
 
