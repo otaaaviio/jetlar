@@ -34,6 +34,7 @@ return new class extends Migration {
             $table->text('disk');
             $table->text('extension');
             $table->text('size');
+            $table->text('pet_id')->nullable();
             $table->timestamps();
         });
 
@@ -45,13 +46,37 @@ return new class extends Migration {
             $table->string('gender');
             $table->string('size');
             $table->string('age');
-            $table->text('veterinary_care');
             $table->string('temperament');
-            $table->text('suitable_living');
-            $table->text('sociable_with');
             $table->string('description');
-            $table->foreignIdFor(\App\Models\File::class, 'cover_id')->nullable()->constrained('files')->onDelete('SET NULL');
+            $table->foreignIdFor(\App\Models\File::class, 'photo_id')->nullable()->constrained('files')->onDelete('SET NULL');
             $table->timestamps();
+        });
+
+        Schema::create('pet_veterinary_cares', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
+            $table->string('veterinary_care');
+            $table->unique(['pet_id', 'veterinary_care']);
+        });
+
+        Schema::create('pet_suitable_livings', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
+            $table->string('suitable_living');
+            $table->unique(['pet_id', 'suitable_living']);
+        });
+
+        Schema::create('pet_sociable_with', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
+            $table->string('sociable_with');
+            $table->unique(['pet_id', 'sociable_with']);
+        });
+
+        Schema::create('pet_photos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
+            $table->foreignIdFor(\App\Models\File::class, 'file_id')->constrained('files')->onDelete('CASCADE');
         });
     }
 
@@ -60,6 +85,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('pet_photos');
+        Schema::dropIfExists('pet_sociable_with');
+        Schema::dropIfExists('pet_suitable_livings');
+        Schema::dropIfExists('pet_veterinary_cares');
         Schema::dropIfExists('pets');
         Schema::dropIfExists('files');
 
