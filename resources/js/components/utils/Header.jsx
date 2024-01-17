@@ -12,7 +12,7 @@ const Header = () => {
         try {
             const response = await api.post("/user/logout", {});
 
-            if (response.status === 201) {
+            if (response.status === 200) {
                 navigate("/");
             }
         } catch (error) {

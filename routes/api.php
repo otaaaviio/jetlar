@@ -23,10 +23,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('/v1')->group(function () {
-        Route::apiResource('pets', PetController::class);
-        Route::apiResource('pets.photos', PetPhotoController::class)->only(['store', 'destroy']);
-        Route::apiResource('photos', PhotoController::class)->only(['show', 'store', 'destroy']);
+    Route::prefix('/user')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::apiResource('pets', PetController::class);
+        Route::apiResource('pets_photos', PetPhotoController::class)->only(['store', 'destroy']);
+        Route::apiResource('photos', PhotoController::class)->only(['show', 'store', 'destroy']);
     });
 });
