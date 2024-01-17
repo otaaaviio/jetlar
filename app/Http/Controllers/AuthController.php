@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreUserRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
@@ -53,8 +54,12 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::user()->tokens()->delete();
+
+        $cookieValue = '';
+        Cookie::queue(Cookie::make('laravel_session', $cookieValue));
+
         return response()->json([
-            'message' => 'Successfully logged out',
-        ]);
+            'message' => 'Successfully logged out'
+        ], 200);
     }
 }
