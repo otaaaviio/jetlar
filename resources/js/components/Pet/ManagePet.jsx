@@ -5,8 +5,10 @@ import Footer from "../utils/Footer";
 import api from "../../services/api";
 
 const ManagePet = () => {
+    const [editing, setEditing] = useState(false);
     const [name, setName] = useState("");
     const [specie, setSpecie] = useState("");
+    const [pet_photos, setPet_photos] = useState([]);
     const [gender, setGender] = useState("");
     const [size, setSize] = useState("");
     const [age, setAge] = useState("");
@@ -17,19 +19,36 @@ const ManagePet = () => {
     const [description, setDescription] = useState("");
 
     const handleAdd = async () => {
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("specie", specie);
+        formData.append("gender", gender);
+        formData.append("size", size);
+        formData.append("age", age);
+        formData.append("temperament", JSON.stringify(temperament));
+        formData.append("description", description);
+
+        veterinary_cares.forEach((care, index) => {
+            formData.append(`veterinary_cares[${index}]`, care);
+        });
+
+        suitable_livings.forEach((living, index) => {
+            formData.append(`suitable_livings[${index}]`, living);
+        });
+
+        sociable_with.forEach((sociable, index) => {
+            formData.append(`sociable_with[${index}]`, sociable);
+        });
+
+        pet_photos.forEach((photo, index) => {
+            formData.append(`pet_photos[${index}]`, photo);
+        });
+
         try {
-            const response = await api.post("/user/pets", {
-                name,
-                specie,
-                gender,
-                size,
-                age,
-                veterinary_cares,
-                temperament,
-                suitable_livings,
-                sociable_with,
-                description,
-            });
+            const response = await api.post("/user/pets", formData);
+            if (response.status == 201) {
+            }
+            console.log(response)
         } catch (error) {
             console.error("Erro durante o registro de pet:", error);
             alert("Erro durante o registro de pet");
@@ -61,16 +80,16 @@ const ManagePet = () => {
                             }}
                         />
                     </div>
-                    <div className="selectInput">
+                    <div className="selectImages">
                         <a>Importar fotos:</a>
-                        <select
-                            value={specie}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
                             onChange={(e) => {
-                                setSpecie(e.target.value);
+                                setPet_photos(Array.from(e.target.files));
                             }}
-                        >
-                            <option value="">Selecione...</option>
-                        </select>
+                        />
                     </div>
                     <div className="selectInput">
                         <a>Espécie:</a>

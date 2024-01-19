@@ -67,7 +67,6 @@ class FileFactory extends Factory
             'disk' => config('filesystems.default'),
             'extension' => pathinfo($file, PATHINFO_EXTENSION),
             'size' => filesize($file),
-            'pet_id' => null,
         ];
     }
 }

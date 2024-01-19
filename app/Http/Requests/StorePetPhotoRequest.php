@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Validation\Rules\File;
 
 class StorePetPhotoRequest extends FormRequest
 {
@@ -17,13 +16,14 @@ class StorePetPhotoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'photo' => ['nullable', File::image()->max('10mb')],
-            'photo_id' => 'nullable|integer|exists:files,id',
+            'pet_photos' => 'required|array',
+            'pet_photos.*' => ['file', 'image', 'max:10240'], // 10 MB
+            'file_id' => 'nullable|integer|exists:files,id',
         ];
     }
 
     public function getUploadedImage(): ?UploadedFile
     {
-        return $this->file('photo');
+        return $this->file('pet_photo');
     }
 }

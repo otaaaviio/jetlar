@@ -6,11 +6,12 @@ use Database\Factories\FileFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * \App\Models\File
  *
- * @property int $id
+ * @property int $file_id
  * @property string $name
  * @property string $file_name
  * @property string $mime_type
@@ -21,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $size
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @method static Builder|File newModelQuery()
  * @method static Builder|File newQuery()
  * @method static Builder|File query()
@@ -39,8 +41,18 @@ use Illuminate\Support\Carbon;
  */
 class File extends Model
 {
+    use SoftDeletes;
+
+    protected $primaryKey = 'file_id';
+    protected $table = 'files';
+
     public static function newFactory(): FileFactory
     {
         return FileFactory::new();
+    }
+
+    public function pets()
+    {
+        return $this->belongsToMany(Pet::class, 'pet_photos', 'file_id', 'pet_id');
     }
 }

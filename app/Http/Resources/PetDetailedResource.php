@@ -28,7 +28,6 @@ class PetDetailedResource extends JsonResource
             'temperament' => $this->temperament,
             'description' => $this->description,
             'photos' => $this->pet_photos->pluck('photo_id'),
-            //'photos' => $this->petPhotos ? PetPhotoResource::collection($this->petPhotos) : null,
             'sociable_with' => $this->sociable_with->pluck('sociable_with'),
             'suitable_livings' => $this->suitable_livings->pluck('suitable_living'),
             'veterinary_cares' => $this->veterinary_cares->pluck('veterinary_care'),

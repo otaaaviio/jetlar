@@ -6,6 +6,10 @@ use App\Http\Requests\StorePetPhotoRequest;
 use App\Http\Requests\StorePetRequest;
 use App\Models\Pet;
 use App\Models\File;
+use App\Models\PetPhoto;
+use App\Models\VeterinaryCare;
+use App\Models\SuitableLiving;
+use App\Models\SociableWith;
 
 class PetService
 {
@@ -23,33 +27,48 @@ class PetService
                 $pet = $this->updatePet($request, $pet);
             }
 
-            $this->updatePetRelations($request, $pet);
-
             return $pet;
         });
     }
 
-    public function attachPhoto(StorePetPhotoRequest $request, Pet $pet): Pet
+    public function attachPhotos(StorePetPhotoRequest $request, Pet $pet): Pet
     {
         return \DB::transaction(function () use ($request, $pet) {
-            if ($request->getUploadedImage() === null) {
+            $uploadedImages = $request->file('photo');
+
+            if ($uploadedImages === null) {
                 return $pet;
             }
 
-            $file = $this->fileService->store($request->getUploadedImage());
-            $pet->photo()->associate($file);
-            $pet->save();
+            foreach ($uploadedImages as $uploadedImage) {
+                $file = $this->fileService->store($uploadedImage);
+                $petPhoto = new PetPhoto(['file_id' => $file->id]);
+                $pet->pet_photos()->save($petPhoto);
+            }
+
             return $pet;
         });
     }
 
     private function updatePetRelations(StorePetRequest $request, Pet $pet): void
     {
-        $pet->veterinary_cares()->sync($request->input('veterinary_cares'));
+        $veterinaryCares = array_map(function ($name) {
+            return VeterinaryCare::firstOrCreate(['veterinary_care' => $name]);
+        }, $request->input('veterinary_cares'));
+        $pet->veterinary_cares()->saveMany($veterinaryCares);
 
-        $pet->suitable_livings()->sync($request->input('suitable_livings'));
+        $suitableLivings = array_map(function ($name) {
+            return SuitableLiving::firstOrCreate(['suitable_living' => $name]);
+        }, $request->input('suitable_livings'));
+        $pet->suitable_livings()->saveMany($suitableLivings);
 
-        $pet->sociable_with()->sync($request->input('sociable_with'));
+        $sociableWith = array_map(function ($name) {
+            return SociableWith::firstOrCreate(['sociable_with' => $name]);
+        }, $request->input('sociable_with'));
+        $pet->sociable_with()->saveMany($sociableWith);
+
+        $petPhotos = PetPhoto::find($request->input('pet_photos'));
+        $pet->pet_photos()->saveMany($petPhotos);
     }
 
     private function createPet(StorePetRequest $request): Pet

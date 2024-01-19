@@ -23,6 +23,8 @@ class StorePetRequest extends FormRequest
             'temperament' => 'required|string',
             'description' => 'nullable|string',
             'photo_id' => 'nullable|integer|exists:files,id',
+            'pet_photos' => 'required|array',
+            'pet_photos.*' => 'required|file|distinct',
             'veterinary_cares' => 'required|array',
             'veterinary_cares.*' => 'required|string|distinct',
             'suitable_livings' => 'required|array',

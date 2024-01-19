@@ -43,15 +43,17 @@ const PetPage = () => {
     };
 
     const handleEdit = async () => {
-        navigate(`/pets/${pet.id}/`)
-    }
+        navigate(`/pets/${pet.id}/edit`);
+    };
 
     return (
         <body className="petPage">
             <Header />
             <div className="centerPet">
                 <div className="btnContainer">
-                    <button className="editBtn" onClick={handleEdit}>Editar</button>
+                    <button className="editBtn" onClick={handleEdit}>
+                        Editar
+                    </button>
                     <button className="deleteBtn" onClick={handleDelete}>
                         Excluir Pet
                     </button>
@@ -61,10 +63,8 @@ const PetPage = () => {
                         <PetPhoto pet={pet} />
                         <div className="nameContainer">
                             <h1>{pet.name}</h1>
-                            <div className="description">
-                                Descrição/Histórico:
-                                <a>{pet.description}</a>
-                            </div>
+                            <a className="aboutPet">Sobre o pet:</a>
+                            <div className="description">{pet.description}</div>
                         </div>
                     </div>
                     <div className="infoPetContainer">
@@ -72,6 +72,7 @@ const PetPage = () => {
                             Espécie:
                             <a>{pet.specie}</a>
                         </div>
+
                         <div className="oneInfo">
                             Sexo:
                             <a>{pet.gender}</a>
@@ -81,7 +82,7 @@ const PetPage = () => {
                             <a>{pet.age}</a>
                         </div>
                         <div className="oneInfo">
-                            Tamanho:
+                            Porte:
                             <a>{pet.size}</a>
                         </div>
                         <div className="oneInfo">

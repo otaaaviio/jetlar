@@ -5,23 +5,22 @@ namespace App\Models;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * \App\Models\Pet
  *
- * @property int $id
+ * @property int $pet_id
  * @property string $name
- * @property string $normalized_name
- * @property string $specie
- * @property string $gender
- * @property string $size
- * @property string $age
- * @property string $temperament
+ * @property int $specie_id
+ * @property int $gender_id
+ * @property int $size_id
+ * @property int $life_stage_id
  * @property string $description
- * @property int|null $photo_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read File|null $photo
+ * @property Carbon|null $deleted_at
  * @method static Builder|Pet newModelQuery()
  * @method static Builder|Pet newQuery()
  * @method static Builder|Pet query()
@@ -29,47 +28,71 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Pet wherePhotoId($value)
  * @method static Builder|Pet whereId($value)
  * @method static Builder|Pet whereName($value)
- * @method static Builder|Pet whereImage($value)
- * @method static Builder|Pet whereNormalizedName($value)
  * @method static Builder|Pet whereUpdatedAt($value)
  * @mixin Eloquent
  */
 class Pet extends Model
 {
+    use HasFactory, SoftDeletes;
+
+    protected $primaryKey = 'pet_id';
+
     protected $fillable = [
         'name',
-        'normalized_name',
-        'specie',
-        'gender',
-        'size',
-        'age',
-        'temperament',
+        'specie_id',
+        'gender_id',
+        'size_id',
+        'life_stage_id',
         'description',
-        'photo_id',
     ];
 
-    public function veterinary_cares()
+    public function veterinaryCares()
     {
-        return $this->hasMany(VeterinaryCare::class);
+        return $this->belongsToMany(VeterinaryCare::class, 'pet_vet_cares', 'pet_id', 'veterinary_care_id');
     }
 
-    public function suitable_livings()
+    public function suitableLivings()
     {
-        return $this->hasMany(SuitableLiving::class);
+        return $this->belongsToMany(SuitableLiving::class, 'pet_suit_livings', 'pet_id', 'suitable_living_id');
     }
 
-    public function sociable_with()
+    public function sociableWith()
     {
-        return $this->hasMany(SociableWith::class);
+        return $this->belongsToMany(SociableWith::class, 'pet_soc_with', 'pet_id', 'sociable_with_id');
     }
 
-    public function pet_photos()
+    public function temperaments()
     {
-        return $this->hasMany(PetPhoto::class);
+        return $this->belongsToMany(Temperament::class, 'pet_temperaments', 'pet_id', 'temperament_id');
+    }
+
+    public function files()
+    {
+        return $this->belongsToMany(File::class, 'pet_files', 'pet_id', 'file_id');
+    }
+
+    public function specie()
+    {
+        return $this->belongsTo(Specie::class, 'specie_id');
+    }
+
+    public function gender()
+    {
+        return $this->belongsTo(Gender::class, 'gender_id');
+    }
+
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
+    }
+
+    public function lifeStage()
+    {
+        return $this->belongsTo(LifeStage::class, 'life_stage_id');
     }
 
     public function scopeSearch(Builder $query, string $search): Builder
     {
-        return $query->where('name', 'like', "%{$search}%");
+        return $query->where('name', 'ilike', "%{$search}%");
     }
 }

@@ -67,6 +67,12 @@ body.petPage {
     width: 400px;
 }
 
+.aboutPet {
+    margin-bottom: 5px;
+    margin-left: 5px;
+    font-size: 1.2rem;
+}
+
 .deleteBtn,
 .editBtn {
     padding: 8px 12px;

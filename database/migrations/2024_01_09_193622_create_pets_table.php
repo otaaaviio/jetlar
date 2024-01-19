@@ -10,22 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        \DB::unprepared('CREATE EXTENSION IF NOT EXISTS "unaccent";');
-        \DB::unprepared(<<<QUERY
-    CREATE OR REPLACE FUNCTION public.immutable_unaccent(regdictionary, text)
-    RETURNS text
-    LANGUAGE c IMMUTABLE PARALLEL SAFE STRICT AS
-    '\$libdir/unaccent', 'unaccent_dict';
-    QUERY);
-        \DB::unprepared(<<<QUERY
-    CREATE OR REPLACE FUNCTION public.f_unaccent(text)
-    RETURNS text
-    LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT
-    RETURN public.immutable_unaccent(regdictionary 'public.unaccent', $1);
-    QUERY);
-
         Schema::create('files', function (Blueprint $table) {
-            $table->id();
+            $table->id('file_id');
             $table->text('name');
             $table->text('file_name');
             $table->text('mime_type');
@@ -36,47 +22,106 @@ return new class extends Migration {
             $table->text('size');
             $table->text('pet_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('species', function (Blueprint $table) {
+            $table->id('specie_id');
+            $table->string('specie');
+            $table->softDeletes();
+        });
+
+        Schema::create('genders', function (Blueprint $table) {
+            $table->id('gender_id');
+            $table->string('gender');
+            $table->softDeletes();
+        });
+
+        Schema::create('sizes', function (Blueprint $table) {
+            $table->id('size_id');
+            $table->string('size');
+            $table->softDeletes();
+        });
+
+        Schema::create('life_stages', function (Blueprint $table) {
+            $table->id('life_stage_id');
+            $table->string('life_stage');
+            $table->softDeletes();
         });
 
         Schema::create('pets', function (Blueprint $table) {
-            $table->id();
+            $table->id('pet_id');
             $table->string('name');
-            $table->string('$normalized_name')->storedAs('upper(f_unaccent(name))');
-            $table->string('specie');
-            $table->string('gender');
-            $table->string('size');
-            $table->string('age');
-            $table->string('temperament');
-            $table->string('description');
-            $table->foreignIdFor(\App\Models\File::class, 'photo_id')->nullable()->constrained('files')->onDelete('SET NULL');
+            $table->foreignId('specie_id')->constrained('species', 'specie_id')->onDelete('cascade');
+            $table->foreignId('gender_id')->constrained('genders', 'gender_id')->onDelete('cascade');
+            $table->foreignId('size_id')->constrained('sizes', 'size_id')->onDelete('cascade');
+            $table->foreignId('life_stage_id')->constrained('life_stages', 'life_stage_id')->onDelete('cascade');
+            $table->text('description');
             $table->timestamps();
+            $table->softDeletes();
         });
 
-        Schema::create('pet_veterinary_cares', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
-            $table->string('veterinary_care');
-            $table->unique(['pet_id', 'veterinary_care']);
+        Schema::create('veterinary_cares', function (Blueprint $table) {
+            $table->id('veterinary_care_id');
+            $table->string('veterinary_care')->unique();
+            $table->softDeletes();
         });
 
-        Schema::create('pet_suitable_livings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
-            $table->string('suitable_living');
-            $table->unique(['pet_id', 'suitable_living']);
+        Schema::create('pet_vet_cares', function (Blueprint $table) {
+            $table->id('pet_vet_care_id');
+            $table->foreignId('pet_id')->constrained('pets', 'pet_id')->onDelete('CASCADE');
+            $table->foreignId('veterinary_care_id')->constrained('veterinary_cares', 'veterinary_care_id')->onDelete('CASCADE');
+            $table->unique(['pet_id', 'veterinary_care_id']);
+            $table->softDeletes();
         });
 
-        Schema::create('pet_sociable_with', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
-            $table->string('sociable_with');
-            $table->unique(['pet_id', 'sociable_with']);
+        Schema::create('suitable_livings', function (Blueprint $table) {
+            $table->id('suitable_living_id');
+            $table->string('suitable_living')->unique();
+            $table->softDeletes();
         });
 
-        Schema::create('pet_photos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Pet::class, 'pet_id')->constrained('pets')->onDelete('CASCADE');
-            $table->foreignIdFor(\App\Models\File::class, 'file_id')->constrained('files')->onDelete('CASCADE');
+        Schema::create('pet_suit_livings', function (Blueprint $table) {
+            $table->id('pet_suit_living_id');
+            $table->foreignId('pet_id')->constrained('pets', 'pet_id')->onDelete('CASCADE');
+            $table->foreignId('suitable_living_id')->constrained('suitable_livings', 'suitable_living_id')->onDelete('CASCADE');
+            $table->unique(['pet_id', 'suitable_living_id']);
+            $table->softDeletes();
+        });
+
+        Schema::create('temperaments', function (Blueprint $table) {
+            $table->id('temperament_id');
+            $table->string('temperament')->unique();
+            $table->softDeletes();
+        });
+
+        Schema::create('pet_temperaments', function (Blueprint $table) {
+            $table->id('pet_temperament_id');
+            $table->foreignId('pet_id')->constrained('pets', 'pet_id')->onDelete('CASCADE');
+            $table->foreignId('temperament_id')->constrained('temperaments', 'temperament_id')->onDelete('CASCADE');
+            $table->unique(['pet_id', 'temperament_id']);
+            $table->softDeletes();
+        });
+
+        Schema::create('sociable_with', function (Blueprint $table) {
+            $table->id('sociable_with_id');
+            $table->string('sociable_with')->unique();
+            $table->softDeletes();
+        });
+
+        Schema::create('pet_soc_with', function (Blueprint $table) {
+            $table->id('pet_soc_with_id');
+            $table->foreignId('pet_id')->constrained('pets', 'pet_id')->onDelete('CASCADE');
+            $table->foreignId('sociable_with_id')->constrained('sociable_with', 'sociable_with_id')->onDelete('CASCADE');
+            $table->unique(['pet_id', 'sociable_with_id']);
+            $table->softDeletes();
+        });
+
+        Schema::create('pet_files', function (Blueprint $table) {
+            $table->id('pet_file_id');
+            $table->foreignId('pet_id')->constrained('pets', 'pet_id')->onDelete('CASCADE');
+            $table->foreignId('file_id')->constrained('files', 'file_id')->onDelete('CASCADE');
+            $table->softDeletes();
         });
     }
 
@@ -85,16 +130,20 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('pet_photos');
-        Schema::dropIfExists('pet_sociable_with');
-        Schema::dropIfExists('pet_suitable_livings');
-        Schema::dropIfExists('pet_veterinary_cares');
+        Schema::dropIfExists('pet_files');
+        Schema::dropIfExists('pet_temperaments');
+        Schema::dropIfExists('pet_suit_livings');
+        Schema::dropIfExists('pet_vet_cares');
+        Schema::dropIfExists('pet_soc_with');
+        Schema::dropIfExists('temperaments');
+        Schema::dropIfExists('sociable_with');
+        Schema::dropIfExists('suitable_livings');
+        Schema::dropIfExists('veterinary_cares');
         Schema::dropIfExists('pets');
+        Schema::dropIfExists('life_stages');
+        Schema::dropIfExists('sizes');
+        Schema::dropIfExists('genders');
+        Schema::dropIfExists('species');
         Schema::dropIfExists('files');
-
-        DB::unprepared('DROP FUNCTION IF EXISTS public.f_unaccent(text) CASCADE;');
-        \DB::unprepared('DROP FUNCTION IF EXISTS public.f_unaccent(text);');
-        \DB::unprepared('DROP FUNCTION IF EXISTS public.immutable_unaccent(regdictionary, text);');
-        \DB::unprepared('DROP EXTENSION IF EXISTS "unaccent";');
     }
 };

@@ -4,36 +4,31 @@ namespace Database\Factories;
 
 use App\Models\Pet;
 use App\Models\File;
+use App\Models\Temperament;
+use App\Models\SuitableLiving;
+use App\Models\SociableWith;
+use App\Models\VeterinaryCare;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Pet>
- */
 class PetFactory extends Factory
 {
     protected $model = Pet::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $name = $this->faker->name;
-        $specie = $this->faker->randomElement(['Canino', 'Felino']);
-        $gender = $this->faker->randomElement(['Fêmea', 'Macho']);
-        $size = $this->faker->randomElement(['Pequeno', 'Médio', 'Grande']);
-        $age = $this->faker->randomElement(['Filhote', 'Adulto', 'Idoso']);
-        $temperament = $this->faker->randomElement(['Agressivo', 'Arisco', 'Brincalhão', 'Calmo', 'Carente', 'Dócil', 'Independente', 'Sociável']);
+        $specie_id = rand(1, 2);
+        $gender_id = rand(1, 2);
+        $size_id = rand(1, 3);
+        $life_stage_id = rand(1, 3);
 
         return [
             'name' => $name,
-            'specie' => $specie,
-            'gender' => $gender,
-            'size' => $size,
-            'age' => $age,
-            'temperament' => $temperament,
+            'specie_id' => $specie_id,
+            'gender_id' => $gender_id,
+            'size_id' => $size_id,
+            'life_stage_id' => $life_stage_id,
             'description' => $this->faker->text(255),
         ];
     }
@@ -41,22 +36,23 @@ class PetFactory extends Factory
     public function configure(): PetFactory
     {
         return $this->afterCreating(function (Pet $pet) {
-            File::factory(rand(1, 5))->create(['pet_id' => $pet->id]);
-
-            \DB::table('pet_veterinary_cares')->insert([
-                'pet_id' => $pet->id,
-                'veterinary_care' => $this->faker->randomElement(['Castrado', 'Vacinado', 'Vermifugado', 'Precisa de cuidados especiais']),
+            $file = File::factory()->create();
+            DB::table('pet_files')->insert([
+                'pet_id' => $pet->pet_id,
+                'file_id' => $file->file_id
             ]);
 
-            \DB::table('pet_suitable_livings')->insert([
-                'pet_id' => $pet->id,
-                'suitable_living' => $this->faker->randomElement(['Apartamento', 'Apartamento telado', 'Casa com quintal fechado']),
-            ]);
+            $temperaments = Temperament::all()->random(rand(2, 3));
+            $pet->temperaments()->attach($temperaments);
 
-            \DB::table('pet_sociable_with')->insert([
-                'pet_id' => $pet->id,
-                'sociable_with' => $this->faker->randomElement(['Cachorros', 'Gatos', 'Crianças', 'Pessoas desconhecidas']),
-            ]);
+            $suitable_livings = SuitableLiving::all()->random(rand(2, 3));
+            $pet->suitableLivings()->attach($suitable_livings);
+
+            $sociable_with = SociableWith::all()->random(rand(2, 3));
+            $pet->sociableWith()->attach($sociable_with);
+
+            $veterinary_cares = VeterinaryCare::all()->random(rand(2, 3));
+            $pet->veterinaryCares()->attach($veterinary_cares);
         });
     }
 }

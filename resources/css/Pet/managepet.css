@@ -108,3 +108,7 @@ body.managePet {
 .multipleSelect input {
     width: 15px;
 }
+
+.selectImages input {
+    margin-left: 25px;
+}
