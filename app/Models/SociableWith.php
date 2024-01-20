@@ -24,7 +24,7 @@ class SociableWith extends Model
 
     protected $fillable = ['sociable_with'];
 
-    public function pets()
+    public function pet()
     {
         return $this->belongsToMany(Pet::class, 'pet_soc_with', 'sociable_with_id', 'pet_id');
     }

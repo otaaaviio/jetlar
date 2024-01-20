@@ -19,7 +19,7 @@ class Specie extends Model
     use HasFactory, SoftDeletes;
 
     public $timestamps = false;
-    protected $table = 'species';
+    protected $table = 'specie';
     protected $primaryKey = 'specie_id';
     protected $fillable = ['specie'];
 }

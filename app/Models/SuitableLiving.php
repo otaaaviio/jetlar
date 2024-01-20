@@ -19,16 +19,13 @@ class SuitableLiving extends Model
     use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'suitable_living_id';
-    protected $table = "suitable_livings";
+    protected $table = "suitable_living";
     public $timestamps = false;
 
-    protected $fillable = [
-        'suitable_living_id',
-        'suitable_living',
-    ];
+    protected $fillable = ['suitable_living'];
 
-    public function pets()
+    public function pet()
     {
-        return $this->belongsToMany(Pet::class, 'pet_suit_livings', 'suitable_living_id', 'pet_id');
+        return $this->belongsToMany(Pet::class, 'pet_suit_living', 'suitable_living_id', 'pet_id');
     }
 }

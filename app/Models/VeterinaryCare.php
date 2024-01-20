@@ -19,13 +19,13 @@ class VeterinaryCare extends Model
     use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'veterinary_care_id';
-    protected $table = "veterinary_cares";
+    protected $table = "veterinary_care";
     public $timestamps = false;
 
     protected $fillable = ['veterinary_care'];
 
-    public function pets()
+    public function pet()
     {
-        return $this->belongsToMany(Pet::class, 'pet_vet_cares', 'veterinary_care_id', 'pet_id');
+        return $this->belongsToMany(Pet::class, 'pet_vet_care', 'veterinary_care_id', 'pet_id');
     }
 }

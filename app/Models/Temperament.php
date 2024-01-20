@@ -19,13 +19,13 @@ class Temperament extends Model
     use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'temperament_id';
-    protected $table = "temperaments";
+    protected $table = "temperament";
     public $timestamps = false;
 
     protected $fillable = ['temperament'];
 
-    public function pets()
+    public function pet()
     {
-        return $this->belongsToMany(Pet::class, 'pet_temperaments', 'temperament_id', 'pet_id');
+        return $this->belongsToMany(Pet::class, 'pet_temperament', 'temperament_id', 'pet_id');
     }
 }

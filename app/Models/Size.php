@@ -19,7 +19,7 @@ class Size extends Model
     use HasFactory, SoftDeletes;
 
     public $timestamps = false;
-    protected $table = 'sizes';
+    protected $table = 'size';
     protected $primaryKey = 'size_id';
     protected $fillable = ['size'];
 }

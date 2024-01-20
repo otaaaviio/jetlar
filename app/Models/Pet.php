@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static Builder|Pet newQuery()
  * @method static Builder|Pet query()
  * @method static Builder|Pet whereCreatedAt($value)
- * @method static Builder|Pet wherePhotoId($value)
+ * @method static Builder|Pet whereImageId($value)
  * @method static Builder|Pet whereId($value)
  * @method static Builder|Pet whereName($value)
  * @method static Builder|Pet whereUpdatedAt($value)
@@ -36,6 +36,7 @@ class Pet extends Model
     use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'pet_id';
+    protected $table = 'pet';
 
     protected $fillable = [
         'name',
@@ -48,12 +49,12 @@ class Pet extends Model
 
     public function veterinaryCares()
     {
-        return $this->belongsToMany(VeterinaryCare::class, 'pet_vet_cares', 'pet_id', 'veterinary_care_id');
+        return $this->belongsToMany(VeterinaryCare::class, 'pet_vet_care', 'pet_id', 'veterinary_care_id');
     }
 
     public function suitableLivings()
     {
-        return $this->belongsToMany(SuitableLiving::class, 'pet_suit_livings', 'pet_id', 'suitable_living_id');
+        return $this->belongsToMany(SuitableLiving::class, 'pet_suit_living', 'pet_id', 'suitable_living_id');
     }
 
     public function sociableWith()
@@ -63,12 +64,12 @@ class Pet extends Model
 
     public function temperaments()
     {
-        return $this->belongsToMany(Temperament::class, 'pet_temperaments', 'pet_id', 'temperament_id');
+        return $this->belongsToMany(Temperament::class, 'pet_temperament', 'pet_id', 'temperament_id');
     }
 
-    public function files()
+    public function images()
     {
-        return $this->belongsToMany(File::class, 'pet_files', 'pet_id', 'file_id');
+        return $this->belongsToMany(Image::class, 'pet_image', 'pet_id', 'image_id');
     }
 
     public function specie()

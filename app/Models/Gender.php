@@ -19,7 +19,7 @@ class Gender extends Model
     use HasFactory, SoftDeletes;
 
     public $timestamps = false;
-    protected $table = 'genders';
+    protected $table = 'gender';
     protected $primaryKey = 'gender_id';
     protected $fillable = ['gender'];
 }
