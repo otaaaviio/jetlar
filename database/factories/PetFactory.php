@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Pet;
-use App\Models\File;
+use App\Models\Image;
 use App\Models\Temperament;
 use App\Models\SuitableLiving;
 use App\Models\SociableWith;
@@ -36,10 +36,16 @@ class PetFactory extends Factory
     public function configure(): PetFactory
     {
         return $this->afterCreating(function (Pet $pet) {
-            $file = File::factory()->create();
-            DB::table('pet_files')->insert([
+            $image1 = Image::factory()->create();
+            $image2 = Image::factory()->create();
+            DB::table('pet_image')->insert([
                 'pet_id' => $pet->pet_id,
-                'file_id' => $file->file_id
+                'image_id' => $image1->image_id
+            ]);
+
+            DB::table('pet_image')->insert([
+                'pet_id' => $pet->pet_id,
+                'image_id' => $image2->image_id
             ]);
 
             $temperaments = Temperament::all()->random(rand(2, 3));
