@@ -1,71 +1,94 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../css/Pet/managePet.css";
 import Header from "../utils/Header";
 import Footer from "../utils/Footer";
 import api from "../../services/api";
+import { useNavigate, useParams } from "react-router-dom";
+import { MultipleSelect, SelectInput, getFormConfig } from "./selects";
+import Snackbar from "@mui/material/Snackbar";
 
 const ManagePet = () => {
-    const [editing, setEditing] = useState(false);
-    const [name, setName] = useState("");
-    const [specie, setSpecie] = useState("");
-    const [pet_photos, setPet_photos] = useState([]);
-    const [gender, setGender] = useState("");
-    const [size, setSize] = useState("");
-    const [age, setAge] = useState("");
-    const [veterinary_cares, setVeterinary_cares] = useState([]);
-    const [temperament, setTemperament] = useState([]);
-    const [suitable_livings, setSuitable_livings] = useState([]);
-    const [sociable_with, setSociable_with] = useState([]);
-    const [description, setDescription] = useState("");
+    const navigate = useNavigate();
+    const pet = useParams();
+    const [openSnackBar, setOpenSnackBar] = useState(false);
+    const editing = Object.keys(pet).length > 0 ? true : false;
+
+    const [formData, setFormData] = useState({
+        name: "",
+        specie_id: "",
+        gender_id: "",
+        size_id: "",
+        life_stage_id: "",
+        description: "",
+        pet_images: [],
+        veterinary_cares: [],
+        temperaments: [],
+        suitable_livings: [],
+        sociable_with: [],
+    });
+
+    useEffect(() => {
+        const fetchPets = async () => {
+            if (Object.keys(pet).length === 0) {
+                return;
+            }
+
+            try {
+                const id = pet.id;
+                const response = await api.get(`/user/pets_detailed/${id}`);
+                let data = response.data.data;
+
+                if (data.description === null) {
+                    data.description = "";
+                }
+
+                setFormData(data);
+            } catch (error) {
+                console.error("Erro ao buscar pet: ", error);
+            }
+        };
+
+        fetchPets();
+    }, [pet]);
+
+    const { formSelectInput, formMultipleSelect } = getFormConfig(
+        formData,
+        setFormData
+    );
 
     const handleAdd = async () => {
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("specie", specie);
-        formData.append("gender", gender);
-        formData.append("size", size);
-        formData.append("age", age);
-        formData.append("temperament", JSON.stringify(temperament));
-        formData.append("description", description);
-
-        veterinary_cares.forEach((care, index) => {
-            formData.append(`veterinary_cares[${index}]`, care);
-        });
-
-        suitable_livings.forEach((living, index) => {
-            formData.append(`suitable_livings[${index}]`, living);
-        });
-
-        sociable_with.forEach((sociable, index) => {
-            formData.append(`sociable_with[${index}]`, sociable);
-        });
-
-        pet_photos.forEach((photo, index) => {
-            formData.append(`pet_photos[${index}]`, photo);
+        const data = new FormData();
+        Object.keys(formData).forEach((key) => {
+            if (Array.isArray(formData[key])) {
+                formData[key].forEach((item, index) => {
+                    data.append(`${key}[${index}]`, item);
+                });
+            } else {
+                data.append(key, formData[key]);
+            }
         });
 
         try {
-            const response = await api.post("/user/pets", formData);
-            if (response.status == 201) {
+            let response;
+            if (editing) {
+                const id = pet.id;
+                response = await api.put(`/user/pets/${id}`, data);
+            } else {
+                response = await api.post(`/user/pets/`, data);
             }
-            console.log(response)
+
+            if (response.status === 201 || response.status === 200) {
+                const id = response.data.data.pet_id;
+                navigate("/pets/" + id);
+            }
         } catch (error) {
             console.error("Erro durante o registro de pet:", error);
             alert("Erro durante o registro de pet");
         }
     };
 
-    const handleCheckChange = ({ event, setValue }) => {
-        const i = event.target.name;
-        if (event.target.checked) {
-            setValue((prevState) => [...prevState, i]);
-        } else {
-            setValue((prevState) => prevState.filter((item) => item !== i));
-        }
-    };
-
     return (
-        <body className="managePet">
+        <div className="bodyManagePet">
             <Header />
             <div className="manageContainer">
                 <div className="centerContainer">
@@ -74,272 +97,97 @@ const ManagePet = () => {
                         <input
                             required
                             type="text"
-                            value={name}
+                            value={formData.name}
                             onChange={(e) => {
-                                setName(e.target.value);
+                                setFormData((prevState) => ({
+                                    ...prevState,
+                                    name: e.target.value,
+                                }));
                             }}
                         />
                     </div>
-                    <div className="selectImages">
-                        <a>Importar fotos:</a>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={(e) => {
-                                setPet_photos(Array.from(e.target.files));
-                            }}
+                    {editing ?? (
+                        <div className="selectImages">
+                            <a>Importar fotos:</a>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => {
+                                    setFormData((prevState) => ({
+                                        ...prevState,
+                                        pet_images: Array.from(e.target.files),
+                                    }));
+                                }}
+                            />
+                        </div>
+                    )}
+                    {formSelectInput.map((field, index) => (
+                        <SelectInput
+                            key={index}
+                            value={field.value}
+                            onChange={(e) => field.setter(e.target.value)}
+                            options={field.options}
+                            label={field.label}
                         />
-                    </div>
-                    <div className="selectInput">
-                        <a>Espécie:</a>
-                        <select
-                            value={specie}
-                            onChange={(e) => {
-                                setSpecie(e.target.value);
-                            }}
-                        >
-                            <option value="">Selecione...</option>
-                            <option value="Canino">Canino</option>
-                            <option value="Felino">Felino</option>
-                        </select>
-                    </div>
-                    <div className="selectInput">
-                        <a>Sexo:</a>
-                        <select
-                            value={gender}
-                            onChange={(e) => {
-                                setGender(e.target.value);
-                            }}
-                        >
-                            <option value="">Selecione...</option>
-                            <option value="Fêmea">Fêmea</option>
-                            <option value="Macho">Macho</option>
-                        </select>
-                    </div>
-                    <div className="selectInput">
-                        <a>Porte:</a>
-                        <select
-                            value={size}
-                            onChange={(e) => {
-                                setSize(e.target.value);
-                            }}
-                        >
-                            <option value="">Selecione...</option>
-                            <option value="Pequeno">Pequeno</option>
-                            <option value="Médio">Médio</option>
-                            <option value="Grande">Grande</option>
-                        </select>
-                    </div>
-                    <div className="selectInput">
-                        <a>Idade:</a>
-                        <select
-                            value={age}
-                            onChange={(e) => {
-                                setAge(e.target.value);
-                            }}
-                        >
-                            <option value="">Selecione...</option>
-                            <option value="Filhote">Filhote</option>
-                            <option value="Adulto">Adulto</option>
-                            <option value="Idoso">Idoso</option>
-                        </select>
-                    </div>
-                    <div className="multipleSelect">
-                        <a>Cuidados Veterinários:</a>
-                        <div className="selects">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    id="Castrado"
-                                    name="Castrado"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setVeterinary_cares,
-                                        })
-                                    }
-                                />
-                                Castrado
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Vacinado"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setVeterinary_cares,
-                                        })
-                                    }
-                                />
-                                Vacinado
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Vermifugado"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setVeterinary_cares,
-                                        })
-                                    }
-                                />
-                                Vermifugado
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Precisa de cuidados Especiais"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setVeterinary_cares,
-                                        })
-                                    }
-                                />
-                                Precisa de cuidados Especiais
-                            </label>
-                        </div>
-                    </div>
-                    <div className="selectInput">
-                        <a>Temperamento:</a>
-                        <select
-                            value={temperament}
-                            onChange={(e) => {
-                                setTemperament(e.target.value);
-                            }}
-                        >
-                            <option value="">Selecione...</option>
-                            <option value="Agressivo">Agressivo</option>
-                            <option value="Arisco">Arisco</option>
-                            <option value="Brincalhão">Brincalhão</option>
-                            <option value="Calmo">Calmo</option>
-                            <option value="Carente">Carente</option>
-                            <option value="Dócil">Dócil</option>
-                            <option value="Independente">Independente</option>
-                            <option value="Sociável">Sociável</option>
-                        </select>
-                    </div>
-                    <div className="multipleSelect">
-                        <a>Vive bem em:</a>
-                        <div className="selects">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Apartamento"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSuitable_livings,
-                                        })
-                                    }
-                                />
-                                Apartamento
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Apartamento Telado"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSuitable_livings,
-                                        })
-                                    }
-                                />
-                                Apartamento Telado
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Casa com quintal fechado"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSuitable_livings,
-                                        })
-                                    }
-                                />
-                                Casa com quintal fechado
-                            </label>
-                        </div>
-                    </div>
-                    <div className="multipleSelect">
-                        <a>Sociável com:</a>
-                        <div className="selects">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Cachorros"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSociable_with,
-                                        })
-                                    }
-                                />
-                                Cachorros
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Gatos"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSociable_with,
-                                        })
-                                    }
-                                />
-                                Gatos
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Crianças"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSociable_with,
-                                        })
-                                    }
-                                />
-                                Crianças
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="Pessoas desconhecidas"
-                                    onChange={(event) =>
-                                        handleCheckChange({
-                                            event,
-                                            setValue: setSociable_with,
-                                        })
-                                    }
-                                />
-                                Pessoas desconhecidas
-                            </label>
-                        </div>
-                    </div>
+                    ))}
+                    {formMultipleSelect.map((field, index) => (
+                        <MultipleSelect
+                            key={index}
+                            values={field.values}
+                            onChange={field.setter}
+                            options={field.options}
+                            label={field.label}
+                        />
+                    ))}
                     <div className="historyInput">
                         <a>Histórico/Descrição(opcional):</a>
                         <textarea
                             type="text"
-                            value={description}
+                            value={formData.description}
                             onChange={(e) => {
-                                setDescription(e.target.value);
+                                setFormData((prevState) => ({
+                                    ...prevState,
+                                    description: e.target.value,
+                                }));
                             }}
                         />
                     </div>
                     <div className="addPet">
-                        <button onClick={handleAdd}>Registrar Pet</button>
+                        <button
+                            onClick={() => {
+                                if (
+                                    formData.name &&
+                                    formData.specie_id &&
+                                    formData.gender_id &&
+                                    formData.size_id &&
+                                    formData.life_stage_id &&
+                                    formData.pet_images.length > 0 &&
+                                    formData.veterinary_cares.length > 0 &&
+                                    formData.temperaments.length > 0 &&
+                                    formData.suitable_livings.length > 0 &&
+                                    formData.sociable_with.length > 0
+                                ) {
+                                    handleAdd();
+                                } else {
+                                    setOpenSnackBar(true);
+                                }
+                            }}
+                        >
+                            {editing ? "Finalizar Edição" : "Registrar Pet"}
+                        </button>
                     </div>
                 </div>
             </div>
+            <Snackbar
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                open={openSnackBar}
+                onClose={() => setOpenSnackBar(false)}
+                message="Preencha todos os campos corretamente!"
+                autoHideDuration={6000}
+            />
             <Footer />
-        </body>
+        </div>
     );
 };
 
