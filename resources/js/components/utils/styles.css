@@ -32,14 +32,14 @@ header button {
     cursor: pointer;
     box-shadow: inset 0 0 0 0 var(--button);
     background-color: transparent;
-    border: 1px solid black;
+    border: none;
     color: black;
+    transition: 0.3s;
     box-shadow: 0px 1px 4px var(--shadow);
 }
 
 header button:hover {
-    transform: translateY(-2px);
-    transition: 0.2s;
+    transform: translateY(-3px);
 }
 
 .social-media {
@@ -52,7 +52,7 @@ footer {
     padding-top: 1px;
 }
 
-footer p {
+footer p, .logoFooter {
     text-align: center;
     display: flex;
     margin-bottom: 0;

@@ -1,4 +1,4 @@
-body.petPage {
+.bodyPetPage {
     background-image: url("../../../public/images/background.png");
     display: flex;
     flex-direction: column;
@@ -126,4 +126,11 @@ body.petPage {
 
 .lastInfo {
     border: 0 !important;
+}
+
+.progessImage {
+    width: 300px;
+    height: 300px;
+    justify-content: center;
+    align-items: center;
 }

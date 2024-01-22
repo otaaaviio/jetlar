@@ -8,10 +8,10 @@ import { ReactSVG } from "react-svg";
 const Footer = () => {
     return (
         <footer>
-            <p>
+            <div className="logoFooter">
                 <ReactSVG src={pet} className="svg" />
                 <span>JetLar</span>
-            </p>
+            </div>
             <p className="copyright">copyright &copy; 2024 Jetimob</p>
             <nav className="social-media">
                 <ul>

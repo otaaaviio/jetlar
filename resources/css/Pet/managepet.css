@@ -1,6 +1,9 @@
-body.managePet {
+.bodyManagePet {
     margin: 0;
     background-image: url("../../../public/images/background.png");
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .manageContainer {
@@ -94,8 +97,8 @@ body.managePet {
     padding: 10px 15px;
     border-radius: 15px;
     background-color: var(--secundary);
-    border: 1px solid black;
-    box-shadow: 0 2px 8px var(--shadow);
+    border: none;
+    box-shadow: 0 4px 12px var(--shadow);
     transition: 0.5s;
     cursor: pointer;
 }
