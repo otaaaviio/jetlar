@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePetPhotoRequest;
-use App\Http\Resources\PhotoResource;
-use App\Models\File;
-use App\Services\FileService;
+use App\Http\Requests\StorePetImageRequest;
+use App\Http\Resources\PetImageResource;
+use App\Models\Image;
+use App\Services\ImageService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 
-class PhotoController extends Controller
+class ImageController extends Controller
 {
     public function __construct(
-        protected readonly FileService $fileService
+        protected readonly ImageService $imageService
     ) {
     }
 
-    public function show(File $photo): JsonResource
+    public function show(Image $image): JsonResource
     {
-        return PhotoResource::make($photo);
+        return PetImageResource::make($image);
     }
 
-    public function store(StorePetPhotoRequest $request): JsonResource
+    public function store(StorePetImageRequest $request): JsonResource
     {
-        return PhotoResource::make(
-            $this->fileService->store($request->getUploadedImage())
+        return PetImageResource::make(
+            $this->imageService->store($request->getUploadedImage())
         );
     }
 
-    public function destroy(File $photo): Response
+    public function destroy(Image $image): Response
     {
-        $this->fileService->delete($photo);
+        $this->imageService->delete($image);
         return response()->noContent();
     }
 }

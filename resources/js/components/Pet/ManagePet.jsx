@@ -106,7 +106,7 @@ const ManagePet = () => {
                             }}
                         />
                     </div>
-                    {editing ?? (
+            
                         <div className="selectImages">
                             <a>Importar fotos:</a>
                             <input
@@ -121,7 +121,7 @@ const ManagePet = () => {
                                 }}
                             />
                         </div>
-                    )}
+                    
                     {formSelectInput.map((field, index) => (
                         <SelectInput
                             key={index}

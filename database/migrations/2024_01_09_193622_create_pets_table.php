@@ -55,7 +55,7 @@ return new class extends Migration {
             $table->foreignId('gender_id')->constrained('gender', 'gender_id')->onDelete('cascade');
             $table->foreignId('size_id')->constrained('size', 'size_id')->onDelete('cascade');
             $table->foreignId('life_stage_id')->constrained('life_stage', 'life_stage_id')->onDelete('cascade');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

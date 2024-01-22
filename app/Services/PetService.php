@@ -2,25 +2,22 @@
 
 namespace App\Services;
 
-use App\Http\Requests\StorePetPhotoRequest;
+use App\Http\Requests\StorePetImageRequest;
 use App\Http\Requests\StorePetRequest;
 use App\Models\Pet;
-use App\Models\File;
-use App\Models\PetPhoto;
-use App\Models\VeterinaryCare;
-use App\Models\SuitableLiving;
-use App\Models\SociableWith;
+use App\Models\Image;
+use Illuminate\Support\Facades\DB;
 
 class PetService
 {
     public function __construct(
-        private readonly FileService $fileService
+        private readonly ImageService $imageService
     ) {
     }
 
     public function upsertPet(StorePetRequest $request, ?Pet $pet = null): Pet
     {
-        return \DB::transaction(function () use ($request, $pet) {
+        return DB::transaction(function () use ($request, $pet) {
             if ($pet === null) {
                 $pet = $this->createPet($request);
             } else {
@@ -31,19 +28,18 @@ class PetService
         });
     }
 
-    public function attachPhotos(StorePetPhotoRequest $request, Pet $pet): Pet
+    public function attachImages(StorePetRequest $request, Pet $pet): Pet
     {
-        return \DB::transaction(function () use ($request, $pet) {
-            $uploadedImages = $request->file('photo');
+        return DB::transaction(function () use ($request, $pet) {
+            $uploadedImages = $request->file('pet_images');
 
             if ($uploadedImages === null) {
                 return $pet;
             }
 
             foreach ($uploadedImages as $uploadedImage) {
-                $file = $this->fileService->store($uploadedImage);
-                $petPhoto = new PetPhoto(['file_id' => $file->id]);
-                $pet->pet_photos()->save($petPhoto);
+                $image = $this->imageService->store($uploadedImage);
+                $pet->images()->attach($image->image_id);
             }
 
             return $pet;
@@ -52,33 +48,35 @@ class PetService
 
     private function updatePetRelations(StorePetRequest $request, Pet $pet): void
     {
-        $veterinaryCares = array_map(function ($name) {
-            return VeterinaryCare::firstOrCreate(['veterinary_care' => $name]);
-        }, $request->input('veterinary_cares'));
-        $pet->veterinary_cares()->saveMany($veterinaryCares);
+        $data = $request->validated();
 
-        $suitableLivings = array_map(function ($name) {
-            return SuitableLiving::firstOrCreate(['suitable_living' => $name]);
-        }, $request->input('suitable_livings'));
-        $pet->suitable_livings()->saveMany($suitableLivings);
+        if (isset($data['veterinary_cares'])) {
+            $pet->veterinaryCares()->sync($data['veterinary_cares']);
+        }
 
-        $sociableWith = array_map(function ($name) {
-            return SociableWith::firstOrCreate(['sociable_with' => $name]);
-        }, $request->input('sociable_with'));
-        $pet->sociable_with()->saveMany($sociableWith);
+        if (isset($data['temperaments'])) {
+            $pet->temperaments()->sync($data['temperaments']);
+        }
 
-        $petPhotos = PetPhoto::find($request->input('pet_photos'));
-        $pet->pet_photos()->saveMany($petPhotos);
+        if (isset($data['suitable_livings'])) {
+            $pet->suitableLivings()->sync($data['suitable_livings']);
+        }
+
+        if (isset($data['sociable_with'])) {
+            $pet->sociableWith()->sync($data['sociable_with']);
+        }
     }
+
 
     private function createPet(StorePetRequest $request): Pet
     {
         $data = $request->validated();
-        unset($data['veterinary_cares'], $data['suitable_livings'], $data['sociable_with']);
 
         $pet = Pet::create($data);
 
         $this->updatePetRelations($request, $pet);
+
+        $this->attachImages($request, $pet);
 
         return $pet;
     }
@@ -86,7 +84,6 @@ class PetService
     private function updatePet(StorePetRequest $request, Pet $pet): Pet
     {
         $data = $request->validated();
-        unset($data['veterinary_cares'], $data['suitable_livings'], $data['sociable_with']);
 
         $pet->update($data);
 
@@ -96,21 +93,23 @@ class PetService
     }
 
 
-    public function deletePhoto($pet, File $file): void
+    public function deletePhoto($pet, Image $image): void
     {
-        $pet->photo()->dissociate();
+        $pet->image()->dissociate();
         $pet->save();
-        $this->fileService->delete($file);
+        $this->imageService->delete($image);
     }
 
     public function deletePet(Pet $pet): void
     {
-        \DB::transaction(function () use ($pet) {
-            if ($pet->photo !== null) {
-                $this->fileService->delete($pet->photo);
+        DB::transaction(function () use ($pet) {
+            foreach ($pet->images as $image) {
+                $this->imageService->delete($image);
+                $pet->images()->detach($image->image_id);
             }
 
             $pet->delete();
         });
     }
+
 }

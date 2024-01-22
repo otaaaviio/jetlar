@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::apiResource('pets', PetController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/user')->group(function () {

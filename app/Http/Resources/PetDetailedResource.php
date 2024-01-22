@@ -19,18 +19,18 @@ class PetDetailedResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->id,
+            'pet_id' => $this->pet_id,
             'name' => $this->name,
-            'specie' => $this->specie,
-            'gender' => $this->gender,
-            'size' => $this->size,
-            'age' => $this->age,
-            'temperament' => $this->temperament,
+            'specie' => $this->specie->specie,
+            'gender' => $this->gender->gender,
+            'size' => $this->size->size,
+            'life_stage' => $this->lifeStage->life_stage,
             'description' => $this->description,
-            'photos' => $this->pet_photos->pluck('photo_id'),
-            'sociable_with' => $this->sociable_with->pluck('sociable_with'),
-            'suitable_livings' => $this->suitable_livings->pluck('suitable_living'),
-            'veterinary_cares' => $this->veterinary_cares->pluck('veterinary_care'),
+            'temperaments' => $this->temperaments->pluck('temperament'),
+            'sociable_with' => $this->sociableWith->pluck('sociable_with'),
+            'suitable_livings' => $this->suitableLivings->pluck('suitable_living'),
+            'veterinary_cares' => $this->veterinaryCares->pluck('veterinary_care'),
+            'images' => $this->images->pluck('path'),
         ];
     }
 }

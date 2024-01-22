@@ -22,11 +22,15 @@ body {
     margin: 0 auto;
 }
 
+.navContainer {
+    max-width: 1290px;
+    margin: 0 auto;
+}
+
 .btnsContainer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-inline: 30vh;
 }
 
 .btnsContainer button {

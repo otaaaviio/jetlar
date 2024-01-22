@@ -2,14 +2,14 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Pet;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin Pet
+ * @mixin Image
  */
-class PetResource extends JsonResource
+class ImageResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,11 +19,8 @@ class PetResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'pet_id' => $this->pet_id,
-            'name' => $this->name,
-            'life_stage' => $this->lifeStage->life_stage,
-            'size' => $this->size->size,
-            'image_path' => optional($this->images->first())->path,
+            'image_id' => $this->image_id,
+            'url' => url($this->path),
         ];
     }
 }

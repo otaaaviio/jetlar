@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static Builder|Pet whereId($value)
  * @method static Builder|Pet whereName($value)
  * @method static Builder|Pet whereUpdatedAt($value)
+ * @property \Illuminate\Database\Eloquent\Collection|Image[] $images
  * @mixin Eloquent
  */
 class Pet extends Model

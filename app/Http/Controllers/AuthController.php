@@ -34,19 +34,21 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Invalid credentials',
-        ], 401);
+        ], 409);
     }
 
     public function register(StoreUserRequest $request)
     {
+        $existingUser = User::where('email', $request->email)->first();
+
+        if ($existingUser) {
+            return response()->json(['message' => 'User already exists'], 409);
+        }
+
         $user = User::firstOrCreate(
             ['email' => $request->email],
             ['name' => $request->name, 'password' => Hash::make($request->password)]
         );
-
-        if (!$user->wasRecentlyCreated) {
-            return response()->json(['message' => 'User already exists'], 409);
-        }
 
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
