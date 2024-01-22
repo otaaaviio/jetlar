@@ -26,7 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/user')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::apiResource('pets', PetController::class);
-        Route::apiResource('pets_photos', PetPhotoController::class)->only(['store', 'destroy']);
-        Route::apiResource('photos', PhotoController::class)->only(['show', 'store', 'destroy']);
+        Route::get('pets_detailed/{pet_id}', [PetController::class, 'fetchPetForEdit']);
     });
 });
