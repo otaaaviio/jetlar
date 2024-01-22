@@ -4,13 +4,19 @@ import api from "../../services/api";
 import "../../../css/Login/login.css";
 import { ReactSVG } from "react-svg";
 import pet from "../../../../public/svg/pet.svg";
+import showP from "../../../../public/svg/show-password.svg";
+import notShow from "../../../../public/svg/not-show-password.svg";
 import RegisterContainer from "./Register";
+import Snackbar from "@mui/material/Snackbar";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [register, setRegister] = useState(false);
     const navigate = useNavigate();
+    const [openSnackBar, setOpenSnackBar] = useState(false);
+    const [openSnackBar2, setOpenSnackBar2] = useState(false);
+    const [show, setShow] = useState(false);
 
     const handleLogin = async () => {
         try {
@@ -25,17 +31,18 @@ const Login = () => {
                     response.data.authorization.token
                 );
                 navigate("/home");
-            } else {
-                alert("Credenciais inválidas");
             }
         } catch (error) {
-            console.error("Erro durante a autenticação", error);
-            alert("Erro durante a autenticação");
+            if (error.response?.status == 409) {
+                setOpenSnackBar(true);
+            } else {
+                console.error("Erro durante a autenticação", error);
+            }
         }
     };
 
     return (
-        <body className="login">
+        <div className="bodyLogin">
             <div className="containerLogin">
                 <div
                     style={{
@@ -61,7 +68,7 @@ const Login = () => {
                             </div>
                             <div className="inputGroup">
                                 <input
-                                    type="password"
+                                    type={show ? "text" : "password"}
                                     value={password}
                                     onChange={(e) =>
                                         setPassword(e.target.value)
@@ -69,9 +76,30 @@ const Login = () => {
                                     className="inputForm"
                                     required
                                 />
+                                <button onClick={() => setShow(!show)}>
+                                    {show ? (
+                                        <ReactSVG src={showP} />
+                                    ) : (
+                                        <ReactSVG src={notShow} />
+                                    )}
+                                </button>
                                 <label className="inputLabel">Senha</label>
                             </div>
-                            <button onClick={handleLogin}>ENTRAR</button>
+                            <button
+                                onClick={() => {
+                                    if (
+                                        email &&
+                                        password &&
+                                        password.length > 5
+                                    ) {
+                                        handleLogin();
+                                    } else {
+                                        setOpenSnackBar2(true);
+                                    }
+                                }}
+                            >
+                                ENTRAR
+                            </button>
                         </div>
                         <div className="register">
                             <button
@@ -90,8 +118,22 @@ const Login = () => {
                         register={register}
                     />
                 )}
+                <Snackbar
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                    open={openSnackBar}
+                    onClose={() => setOpenSnackBar(false)}
+                    message="Credencias Inválidas!"
+                    autoHideDuration={6000}
+                />
+                <Snackbar
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                    open={openSnackBar2}
+                    onClose={() => setOpenSnackBar2(false)}
+                    message="Preencha todos os campos corretamente!"
+                    autoHideDuration={6000}
+                />
             </div>
-        </body>
+        </div>
     );
 };
 

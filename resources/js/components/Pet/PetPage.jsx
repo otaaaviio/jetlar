@@ -4,21 +4,25 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "../utils/Header";
 import Footer from "../utils/Footer";
 import "../../../css/Pet/petpage.css";
-import PetPhoto from "./PetPhoto";
+import { CircularProgress } from "@mui/material";
+import PetCarousel from "./PetCarousel";
 
 const PetPage = () => {
     const navigate = useNavigate();
     let { id } = useParams();
     const [pet, setPet] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchPets = async () => {
+            setIsLoading(true);
             try {
                 const response = await api.get(`/user/pets/${id}`);
                 setPet(response.data.data);
             } catch (error) {
                 console.error("Erro ao buscar pet: ", error);
             }
+            setIsLoading(false);
         };
 
         fetchPets();
@@ -30,7 +34,7 @@ const PetPage = () => {
         );
         if (confirmation) {
             try {
-                const id = pet.id;
+                const id = pet.pet_id;
                 const response = await api.delete(`/user/pets/${id}`);
                 if (response.status === 204) {
                     navigate("/home");
@@ -43,11 +47,11 @@ const PetPage = () => {
     };
 
     const handleEdit = async () => {
-        navigate(`/pets/${pet.id}/edit`);
+        navigate(`/pets/${pet.pet_id}/edit`);
     };
 
     return (
-        <body className="petPage">
+        <div className="bodyPetPage">
             <Header />
             <div className="centerPet">
                 <div className="btnContainer">
@@ -60,7 +64,13 @@ const PetPage = () => {
                 </div>
                 <div className="petContainer">
                     <div>
-                        <PetPhoto pet={pet} />
+                        {isLoading ? (
+                            <div className="progessImage">
+                                <CircularProgress />
+                            </div>
+                        ) : (
+                            <PetCarousel images={pet.images} />
+                        )}
                         <div className="nameContainer">
                             <h1>{pet.name}</h1>
                             <a className="aboutPet">Sobre o pet:</a>
@@ -72,22 +82,26 @@ const PetPage = () => {
                             Espécie:
                             <a>{pet.specie}</a>
                         </div>
-
                         <div className="oneInfo">
                             Sexo:
                             <a>{pet.gender}</a>
                         </div>
                         <div className="oneInfo">
                             Idade:
-                            <a>{pet.age}</a>
+                            <a>{pet.life_stage}</a>
                         </div>
                         <div className="oneInfo">
                             Porte:
                             <a>{pet.size}</a>
                         </div>
-                        <div className="oneInfo">
-                            Temperamento:
-                            <a>{pet.temperament}</a>
+                        <div className="multipleInfos">
+                            Temperamento(s):
+                            <div>
+                                {pet.temperaments &&
+                                    pet.temperaments.map((item, index) => (
+                                        <a key={index}>- {item}</a>
+                                    ))}
+                            </div>
                         </div>
                         <div className="multipleInfos">
                             Sociável com:
@@ -120,7 +134,7 @@ const PetPage = () => {
                 </div>
             </div>
             <Footer />
-        </body>
+        </div>
     );
 };
 
