@@ -115,3 +115,42 @@
 .selectImages input {
     margin-left: 25px;
 }
+
+@media (max-width: 800px) {
+    .manageContainer div {
+        width: 400px;
+    }
+    .selects {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .historyInput textarea{
+        width: 400px !important;
+        height: 100px;
+    }
+    .selectInput {
+        max-width: 200px;
+    }
+    .editInput input {
+        width: 125px;
+    }
+    .selectImages {
+        display: flex;
+        flex-direction: column;
+        width: 200px;
+    }
+}
+
+@media (max-width: 460px) {
+    .manageContainer div {
+        width: 200px;
+    }
+    .historyInput textarea{
+        width: 200px !important;
+        height: 150px;
+    }
+    a {
+        font-size: 14px;
+    }
+}

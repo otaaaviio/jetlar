@@ -120,3 +120,33 @@
     box-shadow: 0 1px 12px var(--shadow);
     border-radius: 40% / 50%;
 }
+
+@media (max-width: 400px) {
+    .cardContainer {
+        width: 200px;
+    }
+    .petImage {
+        width: 200px;
+    }
+    .petImage::before {
+        width: 200px;
+    }
+}
+
+@media (max-width: 900px) {
+    .petCarousel button {
+        position: relative;
+    }
+}
+
+@media (max-width: 550px) {
+    .btnLeft {
+        display: none;
+    }
+    .imagesContainer {
+        width: 200px;
+    }
+    .imagesContainer::before {
+        width: 200px;
+    }
+}

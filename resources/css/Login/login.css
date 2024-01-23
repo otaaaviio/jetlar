@@ -109,3 +109,22 @@
     font-size: 14px;
 }
 
+@media (max-width: 1000px) {
+    .bodyLogin {
+        background-color: var(--primary);
+        background-image: none;
+        background-size: 100% 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .containerLogin {
+        margin: 0 auto;
+    }
+    .loginContainer {
+        width: 200px;
+    }
+    .inputForm {
+        width: 200px;
+    }
+}

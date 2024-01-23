@@ -201,3 +201,31 @@ footer .social-media ul li a:hover {
 .nameFilter input:focus {
     outline: none;
 }
+
+@media (max-width: 400px) {
+    header {
+        padding-inline: 10px;
+    }
+    header button {
+        width: 70px;
+        display: flex;
+        justify-content: center;
+    }
+    .petImage {
+        width: 200px;
+    }
+    .petImage::before {
+        width: 200px;
+    }
+    .btnsContainer {
+        padding-inline: 10px;
+    }
+}
+@media (max-width: 600px) {
+    .filter {
+        font-size: 10px;
+    }
+    .filterOption {
+        margin: 0;
+    }
+}

@@ -38,7 +38,7 @@ class PetController extends Controller
                 if (is_array($value)) {
                     $query->whereIn($filter, $value);
                 } else {
-                    if ($operator === 'like') {
+                    if ($operator === 'ilike') {
                         $value = '%' . $value . '%';
                     }
                     $query->where($filter, '=', $value);

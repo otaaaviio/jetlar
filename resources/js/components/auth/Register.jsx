@@ -104,7 +104,7 @@ const RegisterContainer = ({ register, setRegister }) => {
                         onChange={handleChange}
                         className="inputForm"
                     />
-                    <ShowPass value={showPass} setValeu={setShowPass} />
+                    <ShowPass value={showPass} setValue={setShowPass} />
                     <label className="inputLabel">Senha</label>
                 </div>
                 <div className="inputGroup">
@@ -115,7 +115,7 @@ const RegisterContainer = ({ register, setRegister }) => {
                         onChange={handleChange}
                         className="inputForm"
                     />
-                    <ShowPass value={showPass2} setValeu={setShowPass2} />
+                    <ShowPass value={showPass2} setValue={setShowPass2} />
                     <label className="inputLabel">Confirmar Senha</label>
                 </div>
                 <button onClick={handleRegister}>REGISTRAR-SE</button>

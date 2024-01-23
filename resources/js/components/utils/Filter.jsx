@@ -63,7 +63,6 @@ const Filter = ({ filters, updateFilter, searchBtn, setSearchBtn }) => {
                     <ReactSVG src={search} />
                 </button>
             </div>
-            <div className="line"></div>
             <div className="selectsContainer">
                 {filterOptions.map((option, index) => (
                     <FilterOption

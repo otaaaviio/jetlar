@@ -104,7 +104,8 @@
     justify-content: space-between;
 }
 
-.multipleInfos, .lastInfo {
+.multipleInfos,
+.lastInfo {
     display: flex;
     padding-inline: 10px;
     flex-direction: column;
@@ -133,4 +134,38 @@
     height: 300px;
     justify-content: center;
     align-items: center;
+}
+
+@media (max-width: 900px) {
+    .petContainer div {
+        display: flex;
+        flex-direction: column;
+    }
+    .btnContainer {
+        width: 400px;
+    }
+    .petContainer {
+        flex-direction: row !important;
+    }
+}
+
+@media (max-width: 550px) {
+    .btnContainer {
+        width: 200px;
+    }
+    .petContainer {
+        width: 200px;
+    }
+    .description {
+        width: 190px;
+        height: 200px;
+    }
+    .nameContainer {
+        justify-content: start;
+        margin: 0;
+        height: 360px;
+    }
+    .infoPetContainer {
+        width: 200px;
+    }
 }
