@@ -13,7 +13,7 @@ const Header = () => {
             const response = await api.post("/user/logout", {});
 
             if (response.status === 200) {
-                navigate("/");
+                window.location.href = "/";
             }
         } catch (error) {
             console.error("Erro: ", error);
